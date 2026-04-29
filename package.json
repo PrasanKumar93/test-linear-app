@@ -1,0 +1,15 @@
+{
+  "name": "test-linear-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Release checklist helper CLI",
+  "bin": {
+    "checklist": "bin/checklist.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

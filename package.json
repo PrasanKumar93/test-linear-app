@@ -1,0 +1,17 @@
+{
+  "name": "test-linear-app",
+  "version": "0.1.0",
+  "description": "Utility CLI for generating Symphony smoke health reports.",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node --test"
+  },
+  "bin": {
+    "health-report": "bin/health-report.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "",
+  "license": "MIT"
+}

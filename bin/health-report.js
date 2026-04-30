@@ -116,13 +116,33 @@ function formatTextReport(report) {
 
 function parseArgs(argv) {
   return {
-    json: argv.includes('--json')
+    json: argv.includes('--json'),
+    help: argv.includes('--help')
   };
 }
 
+function printHelp() {
+  const lines = [
+    'usage: node bin/health-report.js [--json] [--help]',
+    '',
+    '  Default: print a human-readable health summary (text) to stdout.',
+    '',
+    '  --json    Print the same metrics as JSON instead of text.',
+    '',
+    '  --help    Show this message and exit without collecting metrics.'
+  ];
+  process.stdout.write(`${lines.join('\n')}\n`);
+}
+
 function main(argv = process.argv.slice(2)) {
-  const report = buildHealthReport();
   const options = parseArgs(argv);
+
+  if (options.help) {
+    printHelp();
+    return;
+  }
+
+  const report = buildHealthReport();
 
   if (options.json) {
     const payload = buildJsonPayload(report);

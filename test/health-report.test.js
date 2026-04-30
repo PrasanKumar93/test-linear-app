@@ -28,6 +28,17 @@ test('buildHealthReport returns expected sections', () => {
   assert.ok(report.checks.length >= 1);
 });
 
+test('CLI --help prints usage for text and JSON modes and skips metrics', async () => {
+  const { stdout, stderr } = await run('node', [cliPath, '--help']);
+
+  assert.equal(stderr, '');
+  assert.ok(stdout.includes('usage:'));
+  assert.ok(stdout.includes('human-readable') || stdout.includes('text'));
+  assert.ok(stdout.includes('--json'));
+  assert.ok(!stdout.includes('Health Report:'));
+  assert.ok(!stdout.includes('"generatedAt"'));
+});
+
 test('CLI prints text health report by default', async () => {
   const { stdout } = await run('node', [cliPath]);
 

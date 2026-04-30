@@ -12,9 +12,12 @@ node bin/health-report.js
 
 # Machine-readable JSON payload
 node bin/health-report.js --json
+
+# Usage (exits without collecting metrics)
+node bin/health-report.js --help
 ```
 
-The default text report summarizes key system metrics and health checks. Passing `--json` emits a compact object with timestamp, platform, uptime, CPU and memory data for easy ingestion.
+The default text report summarizes key system metrics and health checks. Passing `--json` emits a compact object with timestamp, platform, uptime, CPU and memory data for easy ingestion. Passing `--help` prints usage and exits immediately.
 
 ### Development
 

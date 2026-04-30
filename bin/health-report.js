@@ -19,6 +19,10 @@ function readCpuCount() {
   return readMetric(() => os.cpus().length, 1);
 }
 
+function readLoadAverage() {
+  return readMetric(() => os.loadavg(), [0, 0, 0]);
+}
+
 function calculateMemory() {
   const total = readMetric(() => os.totalmem(), 0);
   const free = readMetric(() => os.freemem(), 0);
@@ -37,10 +41,8 @@ function calculateMemory() {
   };
 }
 
-function evaluateChecks(memory) {
+function evaluateChecks(memory, loadAverage, cpuCount) {
   const freeRatio = memory.totalMB > 0 ? memory.freeMB / memory.totalMB : 0;
-  const loadAverage = readMetric(() => os.loadavg(), [0, 0, 0]);
-  const cpuCount = readCpuCount();
 
   return [
     {
@@ -58,6 +60,10 @@ function evaluateChecks(memory) {
 
 function buildHealthReport() {
   const memory = calculateMemory();
+  const loadAverage = readLoadAverage();
+  const cpuCount = readCpuCount();
+  const uptimeSeconds = readMetric(() => Math.round(os.uptime()), 0);
+
   return {
     status: 'ok',
     generatedAt: new Date().toISOString(),
@@ -65,17 +71,66 @@ function buildHealthReport() {
       hostname: os.hostname(),
       platform: os.platform(),
       release: os.release(),
-      uptimeSeconds: readMetric(() => Math.round(os.uptime()), 0),
-      cpuCount: readCpuCount()
+      uptimeSeconds,
+      cpuCount,
+      loadAverage
     },
     memory,
-    checks: evaluateChecks(memory)
+    checks: evaluateChecks(memory, loadAverage, cpuCount)
   };
 }
 
-function main() {
+function buildJsonPayload(report) {
+  return {
+    generatedAt: report.generatedAt,
+    platform: report.system.platform,
+    uptimeSeconds: report.system.uptimeSeconds,
+    loadAverage: report.system.loadAverage,
+    memory: report.memory,
+    cpuCount: report.system.cpuCount
+  };
+}
+
+function formatTextReport(report) {
+  const loadAvg = report.system.loadAverage
+    .map(value => formatNumber(value))
+    .join(', ');
+  const lines = [
+    `Health Report: ${report.status}`,
+    `Generated At: ${report.generatedAt}`,
+    `Hostname: ${report.system.hostname}`,
+    `Platform: ${report.system.platform} ${report.system.release}`,
+    `Uptime Seconds: ${report.system.uptimeSeconds}`,
+    `CPU Count: ${report.system.cpuCount}`,
+    `Load Average (1m,5m,15m): ${loadAvg}`,
+    `Memory: total ${report.memory.totalMB} MB, free ${report.memory.freeMB} MB, utilization ${report.memory.utilization}%`,
+    'Checks:'
+  ];
+
+  report.checks.forEach(check => {
+    lines.push(`- ${check.name}: ${check.status} (${check.detail})`);
+  });
+
+  return `${lines.join('\n')}\n`;
+}
+
+function parseArgs(argv) {
+  return {
+    json: argv.includes('--json')
+  };
+}
+
+function main(argv = process.argv.slice(2)) {
   const report = buildHealthReport();
-  process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+  const options = parseArgs(argv);
+
+  if (options.json) {
+    const payload = buildJsonPayload(report);
+    process.stdout.write(`${JSON.stringify(payload, null, 2)}\n`);
+    return;
+  }
+
+  process.stdout.write(formatTextReport(report));
 }
 
 if (require.main === module) {

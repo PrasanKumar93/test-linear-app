@@ -7,10 +7,14 @@ This repository ships a minimal dependency-free CLI that surfaces a JSON health 
 ### Usage
 
 ```bash
+# Text summary (default)
 node bin/health-report.js
+
+# Machine-readable JSON payload
+node bin/health-report.js --json
 ```
 
-The command prints a pretty JSON payload that includes system metadata, memory readings, and a couple of simple health checks.
+The default text report summarizes key system metrics and health checks. Passing `--json` emits a compact object with timestamp, platform, uptime, CPU and memory data for easy ingestion.
 
 ### Development
 

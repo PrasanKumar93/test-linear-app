@@ -22,15 +22,31 @@ test('buildHealthReport returns expected sections', () => {
   assert.ok(report.system);
   assert.equal(typeof report.system.hostname, 'string');
   assert.ok(Number.isInteger(report.system.uptimeSeconds));
+  assert.ok(Array.isArray(report.system.loadAverage));
+  assert.equal(report.system.loadAverage.length, 3);
   assert.ok(Array.isArray(report.checks));
   assert.ok(report.checks.length >= 1);
 });
 
-test('CLI prints JSON health report', async () => {
+test('CLI prints text health report by default', async () => {
   const { stdout } = await run('node', [cliPath]);
-  const data = JSON.parse(stdout);
 
-  assert.equal(data.status, 'ok');
+  assert.ok(stdout.includes('Health Report:'));
+  assert.ok(stdout.includes('Checks:'));
+  assert.throws(() => JSON.parse(stdout));
+});
+
+test('CLI prints JSON health report when --json flag is set', async () => {
+  const { stdout } = await run('node', [cliPath, '--json']);
+  const data = JSON.parse(stdout);
+  const expectedKeys = ['generatedAt', 'platform', 'uptimeSeconds', 'loadAverage', 'memory', 'cpuCount'];
+
+  assert.deepEqual(Object.keys(data).sort(), expectedKeys.sort());
   assert(isIsoDate(data.generatedAt));
-  assert.ok(Array.isArray(data.checks));
+  assert.equal(typeof data.platform, 'string');
+  assert.ok(Number.isInteger(data.uptimeSeconds));
+  assert.ok(Array.isArray(data.loadAverage));
+  assert.equal(data.loadAverage.length, 3);
+  assert.equal(typeof data.cpuCount, 'number');
+  assert.equal(typeof data.memory.totalMB, 'number');
 });

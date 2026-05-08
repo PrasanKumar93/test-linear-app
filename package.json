@@ -1,0 +1,12 @@
+{
+  "name": "test-linear-app",
+  "version": "1.0.0",
+  "description": "Tiny status CLI",
+  "main": "src/status.js",
+  "bin": {
+    "status": "./bin/status.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

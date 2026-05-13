@@ -1,13 +1,19 @@
 {
-  "name": "test-linear-app",
-  "version": "1.0.0",
-  "description": "Tiny status CLI",
-  "main": "src/status.js",
+  "name": "standup-summary-helper",
+  "version": "0.1.0",
+  "description": "Dependency-free CLI for turning standup notes into a concise summary",
+  "main": "src/standup.js",
+  "type": "module",
   "bin": {
+    "standup-summary": "./bin/standup.js",
     "status": "./bin/status.js",
     "policy-smoke": "./bin/policy-smoke.js"
   },
   "scripts": {
     "test": "node --test"
-  }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
 }

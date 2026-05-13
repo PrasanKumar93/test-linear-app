@@ -1,0 +1,13 @@
+{
+  "name": "test-linear-app",
+  "version": "1.0.0",
+  "description": "Tiny status CLI",
+  "main": "src/status.js",
+  "bin": {
+    "status": "./bin/status.js",
+    "policy-smoke": "./bin/policy-smoke.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

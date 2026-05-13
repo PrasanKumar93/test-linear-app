@@ -5,7 +5,9 @@
   "main": "src/standup.js",
   "type": "module",
   "bin": {
-    "standup-summary": "./bin/standup.js"
+    "standup-summary": "./bin/standup.js",
+    "status": "./bin/status.js",
+    "policy-smoke": "./bin/policy-smoke.js"
   },
   "scripts": {
     "test": "node --test"
